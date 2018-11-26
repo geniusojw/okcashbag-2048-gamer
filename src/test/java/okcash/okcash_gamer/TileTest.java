@@ -1,7 +1,7 @@
 package okcash.okcash_gamer;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import okcash.gamer.ok2048.Tile;
 

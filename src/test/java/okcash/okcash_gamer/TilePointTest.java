@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.awt.Robot;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import okcash.gamer.ok2048.TileColor;
 import okcash.gamer.ok2048.TilePoint;

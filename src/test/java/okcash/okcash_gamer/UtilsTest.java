@@ -3,13 +3,14 @@ package okcash.okcash_gamer;
 import java.util.Random;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import okcash.gamer.ok2048.Board;
 import okcash.gamer.ok2048.Constants;
 import okcash.gamer.ok2048.Utils;
 
 public class UtilsTest {
+	
 	@Test
 	public void moveLeft() {
 		int row = 2 | 1 << 4 | 4 << 8 | 5 << 12;

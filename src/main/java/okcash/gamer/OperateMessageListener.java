@@ -104,7 +104,6 @@ public class OperateMessageListener implements ExceptionListener {
 		}
 	}
 
-	@Override
 	public synchronized void onException(JMSException exception) {
 		System.out.println("JMS Exception occured.  Shutting down client.");
 	}
