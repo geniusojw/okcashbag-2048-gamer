@@ -4,24 +4,33 @@ import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Ok2048Gamer {
+import okcash.gamer.OkGame;
+
+public class Ok2048 implements OkGame {
 	
 	private static final int[] KEY_EVENT = { KeyEvent.VK_UP, KeyEvent.VK_DOWN, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT };
 	
-	private static Robot robotGamer;
+	private Robot robotGamer;
 
-	public static void start() throws AWTException {
-		robotGamer = new Robot();
-		
-		Score.initScoreTables();
-		playGame();
+	@Override
+	public void run() {
+		try {
+			robotGamer = new Robot();
+			
+			Score.initScoreTables();
+			playGame();
+			
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private static void playGame() {
+	private void playGame() {
 		Map<Integer, Integer> drawnTileCount = new HashMap<>();
 		
 		Board board = getBoardFromScreen();
@@ -70,7 +79,12 @@ public class Ok2048Gamer {
 				Score.score_board(board) - scorePenalty, get_max_rank(board));
 	}
 
-	private static void doMoveAction(Move move) {
+	private void doMoveAction(Move move) {
+		robotGamer.mouseMove(TilePoint.clickPoint.x, TilePoint.clickPoint.y);
+		robotGamer.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+		robotGamer.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+		sleepTime(200);
+		
 		int key = KEY_EVENT[move.ordinal()];
 
 		robotGamer.keyPress(key);
@@ -79,7 +93,7 @@ public class Ok2048Gamer {
 		sleepTime(980);
 	}
 
-	private static Board getBoardFromScreen() {
+	private Board getBoardFromScreen() {
 		Board board = new Board(Long.parseUnsignedLong("0"));
 		for (int i = 0; i < 16; i++) {
 			Point tilePoint = TilePoint.tilePoints[i];
@@ -93,9 +107,9 @@ public class Ok2048Gamer {
 				if (retryCount >= 100) {
 					throw new Error("unknown color.");
 				} else if (retryCount >= 30) {
-					sleepTime(60000);
-				} else if (retryCount >= 10) {
 					sleepTime(10000);
+				} else if (retryCount >= 10) {
+					sleepTime(5000);
 				} else {
 					sleepTime(1000);
 				}
@@ -108,15 +122,15 @@ public class Ok2048Gamer {
 		return board;
 	}
 
-	private static void sleepTime(int time) {
+	private void sleepTime(int time) {
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 	}
 
-	private static int get_max_rank(Board board) {
+	private int get_max_rank(Board board) {
 	    int maxrank = 0;
 //	    while (board) {
 //	        maxrank = Math.max(maxrank, int(board & 0xf));
@@ -124,5 +138,5 @@ public class Ok2048Gamer {
 //	    }
 	    return maxrank;
 	}
-
+	
 }

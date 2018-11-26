@@ -48,6 +48,8 @@ public class TileColor {
 		TILE_OF_COLOR_MAP.putIfAbsent(new Color( 68,  68,  68), new Tile(Long.parseUnsignedLong("15"))); // 32768
 		
 		// display ??
+		TILE_OF_COLOR_MAP.putIfAbsent(new Color(155, 154,   1), new Tile(Long.parseUnsignedLong("10"))); // 1024
+		TILE_OF_COLOR_MAP.putIfAbsent(new Color(228,  67,  72), new Tile(Long.parseUnsignedLong("11"))); // 2048
 		TILE_OF_COLOR_MAP.putIfAbsent(new Color( 80,  51, 148), new Tile(Long.parseUnsignedLong("12"))); // 4096
 	}
 	

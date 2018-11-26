@@ -5,9 +5,11 @@ import java.awt.Point;
 public class TilePoint {
 
 	public static Point[] tilePoints;
+	public static Point clickPoint;
 	
 	static {
-		Point firstTilePoint = new Point(950, 405);
+		Point firstTilePoint = new Point(-1000, 415);
+//		Point firstTilePoint = new Point(950, 405);
 		int tileGap = 97;
 		
 		tilePoints = new Point[16];
@@ -31,6 +33,8 @@ public class TilePoint {
 		tilePoints[13] = new Point(firstTilePoint.x + tileGap * 1, firstTilePoint.y + tileGap * 3);
 		tilePoints[14] = new Point(firstTilePoint.x + tileGap * 2, firstTilePoint.y + tileGap * 3);
 		tilePoints[15] = new Point(firstTilePoint.x + tileGap * 3, firstTilePoint.y + tileGap * 3);
+		
+		clickPoint     = new Point(firstTilePoint.x + tileGap * 0, firstTilePoint.y - tileGap * 1);
 	}
 
 }

@@ -1,7 +1,5 @@
 package okcash.gamer;
 
-import java.awt.AWTException;
-
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
@@ -13,11 +11,12 @@ import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import okcash.gamer.ok2048.Ok2048Gamer;
+import okcash.gamer.teamviewer.TeamViewerStarter;
 
 public class OperateMessageListener implements ExceptionListener {
 
 	private static final String COMMAND_QUEUE = "command-queue";
+	private Thread playingGame = new Thread();
 
 	public void listen() {
 
@@ -30,7 +29,6 @@ public class OperateMessageListener implements ExceptionListener {
 			connection.start();
 			connection.setExceptionListener(this);
 
-
 			// Create a Session
 			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
@@ -40,50 +38,69 @@ public class OperateMessageListener implements ExceptionListener {
 			// Create a MessageConsumer from the Session to the Topic or Queue
 			MessageConsumer consumer = session.createConsumer(destination);
 
-			boolean loop = true;
-			while (loop) {
+			while (true) {
 				// Wait for a message
-				Message message = consumer.receive(2000);
+				Message message = consumer.receive(60000);
 				
-				if (message != null) {
-					System.out.println("Received: " + message);
+				if (message == null) {
+					System.out.print(".");
+					continue;
+				}
 					
-					if (message instanceof TextMessage) {
-						TextMessage textMessage = (TextMessage) message;
-						String commandType = textMessage.getText();
+				if (message instanceof TextMessage) {
+					TextMessage textMessage = (TextMessage) message;
+					String command = textMessage.getText();
+					System.out.println("command : " + command);
+					
+					long publishedTime = System.currentTimeMillis() - message.getJMSTimestamp();
+					if (publishedTime > 10000) {
+						System.out.println("discard old message. publishedTime=" + publishedTime);
+						continue;
+					}
+
+					if ("remote".equalsIgnoreCase(command)) {
+						new TeamViewerStarter().start();
+						continue;
 						
-						System.out.println("Command Type: " + commandType);
+					} else if ("center".equalsIgnoreCase(command)) {
+						new TeamViewerStarter().mouseCenterPress();
+						continue;
 						
-						if ("exit".equals(commandType)) {
-							System.out.println("Exit");
-							loop = false;
-							
-						} else if ("ok2048".equals(commandType)) {
-							System.out.println("OK 2048");
-							Ok2048Gamer.start();
-							
-						} else {
-							System.out.println("Not a Registrated Command Type");
+					} else if ("exit".equalsIgnoreCase(command)) {
+						break;
+					}
+
+					Runnable runnable = GameType.getOkGame(command);
+					
+					if (runnable == null) {
+						System.out.println("Not a Registrated Game");
+					} else {
+						if (playingGame.isAlive()) {
+							playingGame.interrupt();
+							System.out.println("playingGame.interrupt()");
 						}
 						
-					} else {
-						System.out.println("Not a TextMessage");
+						playingGame = new Thread(runnable);
+						playingGame.start();
 					}
+					
 				} else {
-					System.out.print(".");
+					System.out.println("Not a TextMessage");
 				}
 			}
 
-			
+			System.out.println("consumer close");
 	        consumer.close();
+	        
+	        System.out.println("session close");
 	        session.close();
+	        
+	        System.out.println("connection close");
 	        connection.close();
 	        
 		} catch (JMSException jmsException) {
 			jmsException.printStackTrace();
 			
-		} catch (AWTException awtException) {
-			awtException.printStackTrace();
 		}
 	}
 
